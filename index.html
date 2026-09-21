@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet 404 - BBC micro:bit</title>
+    <style>
+        :root {
+            --primary-color: #4A148C;
+            --accent-color: #E91E63;
+            --bg-color: #F4F6F9;
+            --sidebar-width: 280px;
+            --text-color: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; }
+
+        /* Sidebar Navigation */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        aside .logo { padding: 20px; background: rgba(0,0,0,0.1); font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        aside ul { list-style: none; padding: 10px 0; }
+        aside li a {
+            display: block;
+            padding: 12px 20px;
+            color: #E0E0E0;
+            text-decoration: none;
+			font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        aside li a:hover, aside li a.active {
+            background-color: var(--accent-color);
+            color: white;
+            padding-left: 25px;
+        }
+        .nav-section { padding: 10px 20px 5px; font-size: 0.75rem; text-transform: uppercase; color: #B388FF; font-weight: bold; }
+
+        /* Main Content Area */
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 6px solid var(--accent-color);
+        }
+        h1 { color: var(--primary-color); margin-bottom: 8px; font-size: 1.8rem; }
+        p.subtitle { color: #666; font-size: 1rem; }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+			margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .card h2 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 15px; border-bottom: 2px solid #EEE; padding-bottom: 8px; }
+        .card p, .card ul { line-height: 1.6; color: #444;text-align: justify; }
+        .card ul { margin-left: 20px; margin-top: 10px;text-align: justify; }
+
+        .btn-makecode {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        .btn-makecode:hover { background-color: #C2185B; }
+
+        .badge {
+            background-color: #E8EAF6;
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .step-box {
+            background-color: #FAFAFA;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Menu Latéral -->
+    <aside>
+        <div class="logo">⚡ Techno micro:bit</div>
+        <ul>
+            <li><a href="#accueil" class="nav-btn active" onclick="showPage('accueil')">🏠 Accueil</a></li>
+            <div class="nav-section">1. Découverte</div>
+            <li><a href="#avant" class="nav-btn" onclick="showPage('avant')">🎛️ Face avant de la carte</a></li>
+            <li><a href="#arriere" class="nav-btn" onclick="showPage('arriere')">🔌 Face arrière de la carte</a></li>
+            <div class="nav-section">2. Prise en main</div>
+            <li><a href="#transfert" class="nav-btn" onclick="showPage('transfert')">💻 Prise en main</a></li>
+            <div class="nav-section">3. Activités Pratiques (Blocs)</div>
+            <li><a href="#act1" class="nav-btn" onclick="showPage('act1')">Activité 1 : Hello World !</a></li>
+            <li><a href="#act2" class="nav-btn" onclick="showPage('act2')">Activité 2 : En boucle</a></li>
+            <li><a href="#act3" class="nav-btn" onclick="showPage('act3')">Activité 3 : Si... Alors</a></li>
+            <li><a href="#act4" class="nav-btn" onclick="showPage('act4')">Activité 4 : Sinon... si</a></li>
+            <li><a href="#act5" class="nav-btn" onclick="showPage('act5')">Activité 5 : Ça secoue</a></li>
+            <li><a href="#act6" class="nav-btn" onclick="showPage('act6')">Activité 6 : Hasard dé...</a></li>
+            <li><a href="#act7" class="nav-btn" onclick="showPage('act7')">Activité 7 : Hasard dé 2 (LED)</a></li>
+            <li><a href="#act8" class="nav-btn" onclick="showPage('act8')">Activit 8 : Tic... Tac...</a></li>
+        </ul>
+    </aside>
+
+    <!-- Zone de Contenu Principal -->
+    <main>
+        <!-- Page Accueil -->
+        <div id="accueil" class="page-content active">
+            <header>
+                <h1>Découverte de la carte BBC micro:bit</h1>
+                <p>La carte BBC micro:bit est un petit ordinateur programmable conçu pour apprendre le codage et l'électronique de manière simple et ludique.</p>
+				<center><img src="IMAGES\Carte stylé.jpg" width="350"/><img src="IMAGES\derrière stylé.jpg" width="350"/></center>
+            </header>
+            <div class="card">
+                <h2>🎯 Objectifs du Projet</h2>
+                <p>Bienvenue sur le portail de programmation ! Vous allez apprendre à programmer la carte BBC micro:bit.</p>
+                <ul>
+                    <li><strong>Matériel :</strong> 1 Ordinateur, 1 Carte BBC micro:bit + câble USB.</li>
+                    <li><strong>Compétence visée :</strong> Comprendre et modifier un programme associé à une fonctionnalité d'un objet technique.</li>
+                </ul>
+                <center><a href="https://makecode.microbit.org/" target="_blank" class="btn-makecode">🚀 Ouvrir l'éditeur MakeCode micro:bit</a></center>
+            </div>
+        </div>
+
+        <!-- Face Avant -->
+        <div id="avant" class="page-content">
+            <header><h1>1.1 La Face Avant de la carte</h1></header>
+			<center><img src="IMAGES\BBC AVANT.png" width="600"/></center>
+			
+            <div class="card">
+                <h2>Quelques composants de la Face avant</h2>
+                <ul>
+                    <li><span class="badge">Boutons A et B</span> : situés à gauche et à droite. Ils permettent de déclencher des actions dans ton programme lorsqu'on appuie dessus (ex. : appui sur A, appui sur B, ou appui simultané A+B)..</li>
+                    <li><span class="badge">Afficheur LED (5x5)</span> : une grille de 25 DEL (diodes électroluminescentes) sert d'écran pour afficher des motifs, des symboles (cœur, smiley), des lettres qui défilent ou des nombres..</li>
+                    <li><span class="badge">Capteur de luminosité</span> : la grille de LED mesure aussi la luminosité ambiante (utile pour faire réagir un actionneur selon le jour ou la nuit)..</li>
+                    <li><span class="badge">Logo Tactile</span> : Capteur tactile supplémentaire (selon la révision V2).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Face Arrière -->
+        <div id="arriere" class="page-content">
+            <header><h1>1.2 La Face Arrière de la carte</h1></header>
+			<center><img src="IMAGES\BBC ARRIERE 01.png" width="600"/></center>
+            <div class="card">
+                <h2>Quelques composants de la Face arrière</h2>
+                <ul>
+                    <li><span class="badge">Accéléromètre</span> : un capteur qui détecte les mouvements, l'inclinaison (gauche/droite), les secousses ou les chutes.</li>
+                    <li><span class="badge">Magnétomètre / Boussole</span> : Un capteur miniature capable de mesurer les champs magnétiques environnants.</li>
+                    <li><span class="badge">Bouton de réinitialisation </span> : un petit bouton situé au dos pour redémarrer ton programme depuis le début.</li>
+					<li><span class="badge">Connecteurs (en bas) </span> : 25 broches métalliques permettent de brancher la carte à d'autres composants extérieurs (moteurs, maquettes, capteurs).</li>
+                    <li><span class="badge">Interface USB</span> : permet de relier la carte à un ordinateur à l'aide d'un câble pour transférer tes programmes.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Transfert -->
+        <div id="transfert" class="page-content">
+            <header><h1>2. Prise en main de la carte et de sa programmation</h1></header>
+            <div class="card">
+                <div class="step-box"><strong>1. Prendre</strong> une carte micro:bit, son alimentation et un câble USB.</div>
+                <div class="step-box"><strong>2. Ouvrir </strong> la web application <a href="https://makecode.microbit.org/" target="_blank" class="btn-makecode">🚀 MakeCode micro:bit</a></div>
+                <div class="step-box"><strong>3. Cliquer</strong>  sur nouveau projet.</div>
+				<center><img src="IMAGES\makecode.png" width="600"/></center>
+                <div class="step-box"><strong>4. Nommer</strong> son premier projet.</div>
+				<div class="step-box"><strong>5. Suivre </strong> les étapes du tutoriel en lisant les différents encadrés</div>
+               
+            </div>
+        </div>
+
+        <!-- Activité 1 -->
+        <div id="act1" class="page-content">
+            <header><h1>Activité 1 : Afficher Hello World !</h1></header>
+            <div class="card">
+                <h2>Préambule</h2>
+                <p>Votre écran doit être identique à celui présenté ci-dessous, avec le titre de votre projet, en bas et au centre de l’écran (Cf. encadré rouge).</p>
+				<center><img src="IMAGES\Hello World.png" width="750"/></center>
+				<p>Cette toute première activité va vous permettre de créer votre premier programme. Il s’agit d’une étape caractéristique et traditionnelle associé au premier programme que l’on réalise dans un langage de programmation que l’on découvre.</p>
+			</div>
+			
+			<div class="card">
+				<h2>Etape 1 : Créer le programme</h2>
+                <p>Le bloc « Toujours » est inutile pour ce premier programme, vous pouvez le faire glisser dans la zone des familles de blocs disponibles jusqu’à ce que le symbole d’une corbeille recouvre la zone.</p>
+				<center><img src="IMAGES\Corbeille.png" width="150"/></center>
+			    <div class="step-box"><strong>1. Placez </strong> le bloc ci-dessous dans la zone de construction du programme.</div>
+				<center><img src="IMAGES\Start Hello.png" width="250"/></center>
+				<div class="step-box"><strong>2. Faites </strong> glisser les deux blocs l’un dans l’autre puis écrivez « Hello World ! ».</div>
+				<center><img src="IMAGES\Start Hello 01.png" width="250"/></center>
+				<div class="step-box">3. Vous devez voir apparaître le résultat de votre programme dans la zone de simulation.</div>
+				<center><img src="IMAGES\H.png" width="250"/></center>
+            </div>
+			
+			<div class="card">
+				<h2>Etape 2 : Enregistrer le programme</h2>
+                <p>Pour enregistrer le programme que vous venez de créer, cliquez sur l’icône disquette. Le fichier va être créé avec une extension de type .HEX et va s’enregistrer automatiquement dans le dossier « Téléchargement » de votre ordinateur.</p>
+				<center><img src="IMAGES\Save Hello.png" width="600"/></center>
+			</div>
+			
+			<div class="card">
+				<h2>Etape 3 : Relier la carte micro:bit à l’ordinateur</h2>
+                <p>Il vous faut maintenant relier votre ordinateur à la carte à l’aide du câble USB.</p>
+				<center><img src="IMAGES\Ordi USB.png" width="450"/></center>
+			</div>
+			
+			<div class="card">
+				<h2>Etape 4 : Transférer le programme vers la carte micro:bit</h2>
+				<p>Une fois la carte reliée à l’ordinateur, vous allez voir apparaître la carte comme un nouveau lecteur dans l’explorateur Windows.</p>
+				<center><img src="IMAGES\PC microbit.png" width="150"/></center>
+				<p>Il vous suffit alors de transférer ou téléverser votre fichier au format .HEX du dossier téléchargement vers la carte par un « glisser/déposer » à l’aide de la souris.</p>
+				<center><img src="IMAGES\PC microbit 01.png" width="450"/></center>
+                <p style="margin-top: 15px; color: var(--accent-color);"><strong>Remarque :</strong> La micro DEL jaune, située au dos de la carte et à côté de la prise micro-USB, va clignoter rapidement durant le transfert, appelé aussi téléversement.</p>
+				<p>Une fois le transfert achevé, le programme va s’exécuter sur la carte micro:bit..</p>
+		   </div>
+		   
+		   <div class="card">
+				<h2>Félicitations !</h2>
+                <p>Félicitation, vous êtes désormais capable :</p>
+				 <ul>
+                    <li><span class="badge">D’accéder à l’outil de programmation en blocs graphiques,</span></li>
+					<li><span class="badge">D’enregistrer votre programme sur votre ordinateur,</span></li>
+					<li><span class="badge">De relier la carte micro:bit à votre ordinateur,</span></li>
+					<li><span class="badge">De transférer le programme sur la carte.</span></li>
+                </ul>
+				<p>Si vous rencontrez des difficultés par la suite, vous pourrez revenir à cette première étape pour réaliser l’une ou l’autre de ces manipulations.</p>
+			</div>
+            </div>
+        </div>
+
+        <!-- Activités 2 à 8 (Structures de base) -->
+        <div id="act2" class="page-content">
+            <header><h1>Activité 2 : La notion de boucle</h1></header>
+			
+			
+		   <div class="card">
+                <h2>Notion étudiée : La répétition</h2>
+				<p>Si vous souhaitez faire apparaître le message « Hello World ! » en permanence, il suffit de reprendre le bloc « Toujours », de le placer dans la zone de construction du programme puis de faire glisser les deux blocs l’un dans l’autre.</p>
+				<center><img src="IMAGES\Boucle Hello.png" width="350"/></center>
+				<p>Si vous souhaitez faire apparaître le même message qu’un certain nombre de fois, utilisez les blocs :</p>
+			    <li><strong>Au démarrage</strong> dans le répertoire de la zone des familles de blocs « Base ».</li>
+				<li><strong>Répéter X fois</strong> faire dans le répertoire « Boucle ».</li>
+				<center><img src="IMAGES\Boucle Hello 01.png" width="350"/></center>
+            </div>
+        </div>
+
+        <div id="act3" class="page-content">
+            <header><h1>Activité 3 : Afficher une image à l’aide d’un bouton poussoir</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : L'événement</h2>
+                <p>Cette activité va vous permettre de conditionner un affichage permanent d’une image suite à une action de l’utilisateur, à savoir appuyer sur l’un des deux boutons poussoirs intégrés à la carte. On parle de programmation <b>évènementielle</b>. Cette nouvelle situation nous permet d’introduire la <b>notion de capteur</b>, ainsi que le <b>concept de condition</b>. 
+				Au sein d’un système automatisé, un capteur est un élément qui va détecter quelque chose. La carte programmable micro:bit possède un certain nombre de capteurs tels que : <u>les boutons poussoirs</u>, <u>l’accéléromètre</u> ou encore le <u>capteur de luminosité</u>. Le concept de condition va nous permettre d’obtenir un résultat en fonction de ce qui sera détecté par le capteur.</p>
+			<div class="card">
+				<h2>Etape 1 : Les blocs nécessaires</h2>
+                <p>Les blocs suivant vont nous permettre d’afficher l’icône d’un cœur si le bouton A est pressé.</p>
+				<center><img src="IMAGES\bloc A3.png" width="450"/></center>
+			</div>
+			<div class="card">
+				<h2>Etape 2 : L’agencement des blocs</h2>
+				<center><img src="IMAGES\bloc A3 01.png" width="300"/></center>
+			</div>
+			<div class="card">
+				<h2>Etape 3 : Le résultat attendu</h2>
+				<center><img src="IMAGES\Coeur.png" width="300"/></center>
+				<p>Une fois le résultat attendu observé sur la zone de simulation, <b>téléversez</b> le programme dans la carte micro:bit.</p>
+			</div>
+            </div>
+        </div>
+
+        <div id="act4" class="page-content">
+            <header><h1>Activité 4 : Afficher une image et la faire disparaître à l’aide de boutons poussoirs</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : Structure conditionnelle</h2>
+                <p>Vous allez chercher à obtenir l’affichage de l’icône cœur à l’aide d’un appui sur le bouton poussoir A et la disparition de cette même icône à l’aide d’un appui sur le bouton poussoir B.</p>
+            </div>
+			<div class="card">
+				<h2>Etape 1 : Les blocs nécessaires</h2>
+                <p>Les blocs suivant vont nous permettre d’afficher l’icône d’un cœur si le bouton A est pressé:</p>
+				<center><img src="IMAGES\bloc A4.png" width="600"/></center>
+				<br>
+				<p>Pour obtenir le bloc « Si… Sinon si », il vous faudra réaliser les manipulations suivantes :</p>
+				<ol style="padding-left: 40px;">
+					<li><strong>Importer</strong>  le bloc « Si… Sinon » :</stan></li><br>
+					<center><img src="IMAGES\SINON SI.png" width="250"/></center><br>
+					<li><strong>Cliquer</strong>  sur le signe « + » situé en bas à gauche du bloc pour ajouter « Sinon si ». :</li><br>
+					<center><img src="IMAGES\SINON SI 01.png" width="250"/></center><br>
+					<li><strong>Cliquer</strong> sur le signe « - » pour supprimer « Sinon » afin d’aboutir au résultat final suivant :</li><br>
+					<center><img src="IMAGES\SINON SI 02.png" width="250"/></center><br>
+				</ol>
+			</div>
+        </div>
+
+        <div id="act5" class="page-content">
+            <header><h1>Activité 5 : Afficher une image et la faire disparaître en inclinant la carte</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : Détection de mouvement</h2>
+                <p>Nous allons maintenant utiliser un autre capteur de la carte, <u>l’accéléromètre</u>. Nous allons chercher à obtenir, comme dans l’activité 4, l’affichage ou l’effacement de l’icône cœur, mais cette fois en inclinant la carte à droite ou à gauche, et non plus en appuyant sur les boutons poussoirs.
+Plus précisément, il va vous falloir faire apparaître l’icône cœur sur l’écran DEL lorsque la carte sera inclinée vers la gauche, puis la faire disparaître lorsque la carte sera inclinée vers la droite..</p>
+            </div>
+			<div class="card">
+				<h2>Etape 1 : Les blocs nécessaires</h2>
+                <p>Utilisation des mêmes blocs qu’à l’activité 4 en modifiant le programme de manière judicieuse à l’aide du bloc suivant :</p>
+				<br>
+				<center><img src="IMAGES\secouer.png" width="300"/></center>
+				<p>Il vous faudra bien sûr explorer les différentes options de ce bloc :</p>
+				<br>
+				<center><img src="IMAGES\secouer 01.png" width="350"/></center>
+				
+			</div>
+        </div>
+
+        <div id="act6" class="page-content">
+            <header><h1>Activité 6 : Créer un dé « magique » avec des nombres</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : Variables et nombres aléatoires</h2>
+                <p>Nous allons à nouveau utiliser l’accéléromètre, mais cette fois pour détecter le fait que la carte est secouée.</p><br>
+				<p>Cette activité va permettre d’introduire le concept de variable qui est très souvent utilisée en programmation. Lorsqu’une variable est utilisée dans un programme, il faut tout d’abord la créer et la déclarer, avant de pouvoir l’utiliser dans le programme.</p>	<br>
+				<p>Dès que la carte sera secouée, un tirage aléatoire sera réalisé, afin de choisir un nombre compris entre 1 et 6. Cette valeur aléatoire sera alors affectée à la variable, puis affichée.</p>
+            </div>
+			
+			<div class="card">
+				<h2>Etape 1 : Créer la variable</h2>
+                <p>Dans la famille de blocs Variables, sélectionner « Créer une variable » :</p>
+				<br>
+				<center><img src="IMAGES\Variable.png" width="300"/></center>
+				<p>Appelons notre variable « Nombre » et validons. Nous disposons désormais des blocs suivants :</p><br>
+				<center><img src="IMAGES\Variable nombre.png" width="200"/></center>
+				
+			</div>
+			
+			<div class="card">
+				<h2>Etape 2 : Les blocs nécessaires</h2>
+                <p>Le bloc « Définir Nombre » va nous permettre de déclarer la variable, et de lui associer une valeur :</p>
+				<center><img src="IMAGES\Définir nombre.png" width="300"/></center><br>
+				<p>Les deux blocs suivants vont nous permettre d’afficher sur l’écran LED la valeur affectée à la variable. : </p>
+				<center><img src="IMAGES\Variable nombre 01.png" width="600"/></center><br>
+				
+				<p>En ce qui concerne le tirage aléatoire d’une valeur comprise en 0 et 6, nous allons devoir faire appel à un bloc de la famille « Maths », à savoir le bloc « Choisir au hasard » (Pick Random) :</p><br>
+				<center><img src="IMAGES\Hazard.png" width="300"/></center><br>
+				<p>Enfin la carte détectera le fait d’être secouée à l’aide de ce dernier bloc : </p><br>
+				<center><img src="IMAGES\Lorsque secouer.png" width="200"/></center><br>
+				
+			</div>
+			
+			<div class="card">
+				<h2>Etape 3 : Agencer les blocs</h2>
+                <p>Commençons par déclarer notre variable, et affectons-lui une valeur aléatoire comprise entre 0 et 6 :</p><br>
+				<center><img src="IMAGES\Hazard 01.png" width="450"/></center><br>
+				 <p>Paramétrons ensuite l’affichage de cette variable :</p><br>
+				<center><img src="IMAGES\Hazard 02.png" width="250"/></center><br>
+				<p>L’évènement déclencheur étant le fait de secouer la carte, il ne reste plus qu’à placer les deux sous-ensembles précédents dans le bloc « Lorsque secouer » afin de récupérer l’information qui sera délivrée par l’accéléromètre, et créer une boucle.</p><br>
+				<center><img src="IMAGES\Hazard 03.png" width="450"/></center><br>
+					
+			</div>
+			
+        </div>
+
+        <div id="act7" class="page-content">
+            <header><h1>Activité 7 : Créer un dé « magique » avec des images</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : Affichage visuel conditionnel</h2>
+                <p>Le dé « magique » que vous avez créé à l’activité 6 ne ressemble pas encore totalement à un « vrai » dé à jouer. En effet, sur un « vrai » dé, ce ne sont pas des chiffres qui sont inscrits, mais des petits points qui sont dessinés et qui matérialisent les valeurs de 1 à 6.</p><br>
+				<p>Voici donc un nouveau défi, créer un dé « magique » ressemblant à un vrai dé. 
+				Pour y parvenir, vous allez juste devoir modifier cette partie du programme de l’activité 6 :</p><br>
+				<center><img src="IMAGES\Hazard 02.png" width="250"/></center><br>	
+				<p>Vous allez devoir créer les 6 valeurs à l’aide du bloc :</p><br>
+				<center><img src="IMAGES\Grille LED.png" width="150"/></center><br>	
+				<p>Sur ce bloc, vous pourrez « dessiner » les 6 valeurs en cliquant sur les DEL que vous souhaitez activer.
+				Pour la valeur 5 par exemple, vous aurez ce bloc suivant :</p><br>
+				<center><img src="IMAGES\cinq.png" width="150"/></center><br>	
+				<p>Ces 6 blocs vont remplacer l’affichage de la valeur de la variable Nombre.</p><br>
+				<p><b><u>Petit indice</u> :</b>  Une fois que vous aurez créé vos 6 valeurs, vous devrez mettre en place des conditions dans votre programme, comme nous l’avons fait dans l’activité 4.</p><br>
+				<p>L’idée est la suivante : Si la valeur aléatoire affectée à la variable est 5, alors afficher le bloc faisant apparaître 5 DEL «activées». </p><br>
+				<p>Il vous faudra mettre en place les conditions pour envisager les 6 possibilités, puisque la valeur affectée à la variable peut être comprise entre 1 et 6.</p><br>
+				<p>Le bloc suivant devrait vous rendre service à 6 reprises : </p><br>
+				<center><img src="IMAGES\égale.png" width="150"/></center><br>	
+				
+            </div>
+        </div>
+
+        <div id="act8" class="page-content">
+            <header><h1>Activité 8 : Créer un chronomètre</h1></header>
+            <div class="card">
+                <h2>Notion étudiée : Incrémentation & Temporisation</h2>
+                <p>Ce chronomètre ne sera pas d’une grande précision car il ne comptera que les secondes mais cette activité va nous permettre de continuer à mettre en œuvre le concept de boucle.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript de navigation fluide -->
+    <script>
+        function showPage(pageId) {
+            // Masquer toutes les pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Réinitialiser les boutons du menu
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Afficher la page sélectionnée
+            document.getElementById(pageId).classList.add('active');
+
+            // Activer l'élément du menu correspondant
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
